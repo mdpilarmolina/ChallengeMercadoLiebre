@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
 import { useProducts } from "../context/ProductsContext";
 import ProductCard from "../components/ProductCard";
+import ProductCarousel from "../components/ProductCarousel";
 
 export default function Home() {
   const { products } = useProducts();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todas");
+  const featured = useMemo(() => products.slice(0, 5), [products]);
 
   const categories = useMemo(() => {
     const set = new Set(products.map((p) => p.category));
@@ -34,7 +36,7 @@ export default function Home() {
           </p>
         </div>
       </section>
-
+      {featured.length > 0 && <ProductCarousel products={featured} />}
       <section className="filters" aria-label="Filtros de productos">
         <input
           type="search"
