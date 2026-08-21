@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useProducts } from "../context/ProductsContext";
+import { useCart } from "../context/CartContext";
 
 const formatPrice = (value) =>
   new Intl.NumberFormat("es-AR", {
@@ -12,6 +14,9 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { getProduct } = useProducts();
+  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState(false);
   const product = getProduct(id);
 
   if (!product) {
@@ -62,8 +67,40 @@ export default function ProductDetail() {
 
           <p className="detail__description">{product.description}</p>
 
-          <button className="btn btn--primary btn--wide" disabled={outOfStock}>
-            {outOfStock ? "No disponible" : "Comprar ahora"}
+          {!outOfStock && (
+            <div className="qty-selector">
+              <span>Cantidad:</span>
+              <button
+                type="button"
+                className="qty-btn"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                aria-label="Restar unidad"
+              >
+                −
+              </button>
+              <span>{quantity}</span>
+              <button
+                type="button"
+                className="qty-btn"
+                onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                disabled={quantity >= product.stock}
+                aria-label="Sumar unidad"
+              >
+                +
+              </button>
+            </div>
+          )}
+
+          <button
+            className="btn btn--primary btn--wide"
+            disabled={outOfStock}
+            onClick={() => {
+              addToCart(product.id, quantity);
+              setAdded(true);
+              setTimeout(() => setAdded(false), 2000);
+            }}
+          >
+            {outOfStock ? "No disponible" : added ? "¡Agregado! ✓" : "Agregar al carrito"}
           </button>
         </div>
       </div>

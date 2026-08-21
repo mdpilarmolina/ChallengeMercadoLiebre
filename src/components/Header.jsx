@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 function HareMark() {
   return (
@@ -28,6 +29,8 @@ function HareMark() {
 }
 
 export default function Header() {
+  const { cartCount } = useCart();
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -51,6 +54,14 @@ export default function Header() {
             className={({ isActive }) => "main-nav__link" + (isActive ? " is-active" : "")}
           >
             Panel Admin
+          </NavLink>
+          <NavLink
+            to="/carrito"
+            className={({ isActive }) => "main-nav__link main-nav__link--cart" + (isActive ? " is-active" : "")}
+            aria-label={`Carrito, ${cartCount} productos`}
+          >
+            🛒 Carrito
+            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </NavLink>
         </nav>
       </div>
